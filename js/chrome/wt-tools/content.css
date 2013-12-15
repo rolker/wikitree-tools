@@ -1,0 +1,32 @@
+div.wt-tools {
+	border-style:solid;
+	border-width:medium;
+	border-color: #006600;
+	display: none;
+	font-family: calibri, verdana, arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.15em;
+}
+
+div.wt-tools:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;	
+}
+
+.wt-tools-ok {
+	background-color: #9f9;
+	margin: .5em;
+}
+
+.wt-tools-warning {
+  background-color: #ffa;
+  margin: .5em;
+}
+
+.wt-tools-error {
+	background-color: #faa;
+  margin: .5em;
+}
