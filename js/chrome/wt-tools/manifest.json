@@ -2,19 +2,20 @@
   "manifest_version": 2,
   "name": "WikiTree Tools",
   "description": "This extension add useful tools while working on WikiTree.",
-  "version": "0.0.4",
-    "icons": { "16": "icon16.png",
-        "48": "icon48.png",
-        "128": "icon128.png"
-    },
+  "version": "0.0.5",
+  "author": "Roland Arsenault",
+  "icons": { "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "permissions": [
     "http://*.wikitree.com/"
   ],
 
-    "background": {
-        "scripts": ["background.js"],
-        "persistent": false
-    },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
 
   "page_action": {
     "default_icon": "icon.png",
