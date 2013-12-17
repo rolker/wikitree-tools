@@ -1,0 +1,63 @@
+body {
+  margin:0
+}
+
+#tree {
+  position: absolute;
+  width: 95%;
+  height: 95%;
+  border: solid;
+  overflow: hidden;
+}
+
+#tree-content {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+#wikitree {
+  position:absolute;
+  left: 75.0%;
+/*   top: 10px; */
+  width: 24%;
+  border: solid;
+  height: 95%;
+}
+
+#wt-frame-view {
+  width: 99%;
+  height: 95%;
+}
+
+
+.title-bar {
+  border: solid;
+  background: rgba(128,255,128,.75);
+}
+
+.profile {
+  border: solid;
+  display: inline-block;
+  width: 10em;
+  height: 5em;
+  left: 0;
+  top: 0;
+  position: absolute;
+  display: none;
+}
+
+.Male {
+  background: rgba(175,175,255,1);
+}
+
+.Female {
+  	background: rgba(255,175,175,1);
+}
+
+.Unknown {
+  background: rgba(175,175,175,1);
+}
+
+
