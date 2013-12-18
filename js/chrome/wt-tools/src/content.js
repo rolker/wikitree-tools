@@ -1,10 +1,12 @@
 
 tablify = function(value){
   var ret = $('<table>');
+  
   for(var i in value){
+    var row, data;
     if(typeof value[i] == 'string'){
-      var row = $("<tr>");
-      var data = $('<td style="background-color: #E0E0E0">');
+      row = $("<tr>");
+      data = $('<td style="background-color: #E0E0E0">');
       data.html(i);
       row.append(data);
       data = $("<td>");
@@ -13,8 +15,8 @@ tablify = function(value){
       ret.append(row);
     }else{
       for(var j = 0; j < value[i].length; j++){
-        var row = $("<tr>");
-        var data = $('<td style="background-color: #E0E0E0">');
+        row = $("<tr>");
+        data = $('<td style="background-color: #E0E0E0">');
         data.html(i);
         row.append(data);
         data = $("<td>");
@@ -40,9 +42,9 @@ parseItem = function(element){
   element.find("[itemprop]").not(subitems).each(function(index){
     var $this = $(this);
     var name = $this.attr("itemprop");
-    if(ret[name] == undefined)
+    if(ret[name] === undefined)
       ret[name] = [];
-    if($this.attr("itemscope") != undefined){
+    if($this.attr("itemscope") !== undefined){
       ret[name].push(parseItem($this));
     } else {
       if(this.nodeName == "META"){
@@ -78,14 +80,14 @@ lint = function(data){
   var ret = $('<span>');
   var ok = true;
 
-  var age = undefined;
+  var age;
   var status = 'error';
-  var birth = undefined;
-  var death = undefined;
-  if(data.person.birthDate != undefined){
+  var birth;
+  var death;
+  if(data.person.birthDate !== undefined){
     birth = new Date(data.person.birthDate[0]);
     death = new Date();
-    if(data.person.deathDate != undefined){
+    if(data.person.deathDate !== undefined){
       death = new Date(data.person.deathDate[0]);
     }
     age = death - birth;
@@ -104,14 +106,15 @@ lint = function(data){
     ok = false;
   ret.append($('<span class="wt-tools-'+status+'">age: '+age+'</span>'));
 
-  if(data.person.marriage != undefined){
-    for(var i = 0; i < data.person.marriage.length; i++){
+  var i;
+  if(data.person.marriage !== undefined){
+    for(i = 0; i < data.person.marriage.length; i++){
       status = "warning";
-      var marriageAge = undefined;
-      var marriageDate = undefined;
-      if(data.person.marriage[i].startDate != undefined){
+      var marriageAge;
+      var marriageDate;
+      if(data.person.marriage[i].startDate !== undefined){
         marriageDate = new Date(data.person.marriage[i].startDate[0]);
-        if(birth != undefined){
+        if(birth !== undefined){
           marriageAge = marriageDate - birth;
           marriageAge /= 3600000;
           marriageAge /= 24;
@@ -121,11 +124,11 @@ lint = function(data){
           if(marriageAge >= 14)
             status = "ok";
         }
-        if(death != undefined && marriageDate > death)
+        if(death !== undefined && marriageDate > death)
           status = "error";
       }
       var md = marriageDate;
-      if(md != undefined){
+      if(md !== undefined){
         md = new Date(md.getTimezoneOffset()*60000+md.getTime());
         md = md.toDateString();
       }
@@ -140,8 +143,8 @@ lint = function(data){
     ok = false;
   }
 
-  if((birth || death) && data.person.parent != undefined){
-    for(var i = 0; i < data.person.parent.length; i++){
+  if((birth || death) && data.person.parent !== undefined){
+    for(i = 0; i < data.person.parent.length; i++){
       chrome.runtime.sendMessage({command:'get', id:urlToId(data.person.parent[i].url[0])}, function(response) {
         var person = response.person;
         if(person){
@@ -150,11 +153,11 @@ lint = function(data){
             parent = 'father';
           else if (person.gender[0] == 'female')
             parent = 'mother';
-          var parentAge = undefined;
-          var parentBirthDate = undefined;
-          if(person.birthDate[0] != undefined){
+          var parentAge;
+          var parentBirthDate;
+          if(person.birthDate[0] !== undefined){
             parentBirthDate = new Date(person.birthDate[0]);
-            if(parentBirthDate != undefined){
+            if(parentBirthDate !== undefined){
               var status = "ok";
               parentAge = birth - parentBirthDate;
               parentAge /= 3600000;
@@ -178,7 +181,7 @@ lint = function(data){
 
 main = function(){
   var data = scan();
-  if(data != undefined){
+  if(data !== undefined){
     chrome.runtime.sendMessage({command:'add', person:data.person}, function(response) {});
 
     var results = lint(data);
