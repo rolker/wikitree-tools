@@ -8,6 +8,7 @@ import datetime
 import os
 import time
 import json
+import httplib
 
 class WikiTreeError(Exception):
     pass
@@ -52,11 +53,14 @@ class Connection:
         req = self.baseurl+link
         if self.debug:
             print 'req:',req
-        ret = self.opener.open(req)
-        if self.debug:
+        try:
+          ret = self.opener.open(req)
+          if self.debug:
             print 'code:',ret.getcode()
             print 'info:',ret.info()
-        return ret
+          return ret
+        except (IOError, httplib.HTTPException):
+          return None
 
     def login(self, max_tries=3):
         tries = 0
