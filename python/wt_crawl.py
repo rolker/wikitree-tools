@@ -8,10 +8,37 @@ import urllib
 import datetime
 import StringIO
 
+class WTCache:
+  def __init__(self, connection, fname=None):
+    self.connection = connection
+    self.cache = {}
+    self.file = None
+    if fname is not None:
+      try:
+        self.file = open(fname,'r+')
+        for l in self.file.readlines():
+          data = json.load(StringIO.StringIO(l))
+          self.cache[int(data[0]['user_id'])] = data
+      except (IOError):
+        self.file = open(fname,'w')
+      
+  def get(self,uid):
+    if uid in self.cache:
+      return self.cache[uid][0]['person']
+    p = self.connection.getPage('action=getPerson&key='+str(uid)+'&fields=Name,FirstName,LastNameCurrent,Parents,Siblings,Children,Spouses')
+    if p is not None:
+      datastr = p.read()
+      if self.file is not None:
+        self.file.write(datastr+'\n')
+      data = json.load(StringIO.StringIO(datastr))
+      self.cache[int(data[0]['user_id'])] = data
+      return data[0]['person']
+
+
 home = None
 steps = 6
 out = None
-logfn = None
+cachefn = None
 
 for a in sys.argv[1:]:
     if '=' in a:
@@ -20,8 +47,8 @@ for a in sys.argv[1:]:
             steps = int(parts[1])
         if parts[0] == 'out':
             out = parts[1]
-        if parts[0] == 'log':
-          logfn = parts[1]
+        if parts[0] == 'cache':
+          cachefn = parts[1]
             
     else:
         home = a
@@ -34,9 +61,7 @@ print 'home',home,'steps',steps
 
 data = json.load(c.getPage('action=getPerson&key='+home+'&fields=Id'))
 
-log = None
-if logfn is not None:
-  log = open(logfn('w'))
+cache = WTCache(c,cachefn)
 
 toCheck = []
 checked = []
@@ -52,6 +77,8 @@ if out is not None:
     outfile.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body>\n')
     outfile.write('<h1>'+str(datetime.datetime.now())+'</h1>\n')
 
+total_count = 1
+
 for step in range(steps+1):
     newToCheck = []
     if outfile is not None:
@@ -59,14 +86,10 @@ for step in range(steps+1):
     count = 1
     for uid in toCheck:
         checked.append(uid)
-        p = c.getPage('action=getPerson&key='+str(uid)+'&fields=Name,FirstName,LastNameCurrent,Parents,Siblings,Children,Spouses')
-        if p is not None:
-          datastr = p.read()
-          if log is not None:
-            log.write(datastr+'\n')
-          data = json.load(StringIO.StringIO(datastr))[0]['person']
+        data = cache.get(uid)
+        if data is not None:
           profiles[uid] = data
-          print step,'steps, ',count,'of',len(toCheck),data['Name'],
+          print total_count, step,'steps, ',count,'of',len(toCheck),data['Name'],
           name = ''
           if 'FirstName' in data:
               name += data['FirstName']+' '
@@ -77,6 +100,7 @@ for step in range(steps+1):
           if links[uid] is not None:
             print '(link:',links[uid][1],profiles[links[uid][0]]['Name'],')'
           count += 1
+          total_count += 1
           if outfile is not None:
               outfile.write('Steps: '+str(step)+' <a id="'+data['Name']+'" href="http://www.wikitree.com/wiki/'+data['Name']+'">'+data['Name']+'</a>: '+name)
               if links[uid] is not None:
