@@ -7,6 +7,7 @@ import codecs
 import urllib
 import datetime
 import StringIO
+import time
 
 class WTCache:
   def __init__(self, connection, fname=None):
@@ -25,14 +26,21 @@ class WTCache:
   def get(self,uid):
     if uid in self.cache:
       return self.cache[uid][0]['person']
-    p = self.connection.getPage('action=getPerson&key='+str(uid)+'&fields=Name,FirstName,LastNameCurrent,Parents,Siblings,Children,Spouses')
-    if p is not None:
-      datastr = p.read()
-      if self.file is not None:
-        self.file.write(datastr+'\n')
-      data = json.load(StringIO.StringIO(datastr))
-      self.cache[int(data[0]['user_id'])] = data
-      return data[0]['person']
+    ret = None
+    while ret is None:
+      p = self.connection.getPage('action=getPerson&key='+str(uid)+'&fields=Name,FirstName,LastNameCurrent,Parents,Siblings,Children,Spouses')
+      if p is not None:
+        datastr = p.read()
+        try:
+          data = json.load(StringIO.StringIO(datastr))
+          self.cache[int(data[0]['user_id'])] = data
+          if self.file is not None:
+            self.file.write(datastr+'\n')
+          ret = data[0]['person']
+        except (ValueError):
+          print 'error fetching',uid
+          time.sleep(.5)
+    return ret
 
 
 home = None
