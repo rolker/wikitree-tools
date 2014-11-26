@@ -5,6 +5,7 @@ import sys
 data = {}
 
 missing_profiles = []
+extra_tabs = []
 
 class ProfileException(BaseException):
   def __init__(self):
@@ -49,15 +50,18 @@ for line in open(sys.argv[1], 'r'):
   row = line.split('\t')
   if header is None:
     header = row
-  try:
-    p = Profile(row)
-    data[p.uid] = p
-  except (ValueError,ProfileException,IndexError):
-    c = min(len(header),len(row))
-    for i in range(c):
-      print '\t',header[i]+':'+row[i]
-    if len(row) > c:
-      print row[c:]
+  else:
+    if len(row) > 16:
+      extra_tabs.append(row[0])
+    try:
+      p = Profile(row)
+      data[p.uid] = p
+    except (ValueError,ProfileException,IndexError):
+      c = min(len(header),len(row))
+      for i in range(c):
+        print '\t',header[i]+':'+row[i]
+      if len(row) > c:
+        print row[c:]
  
 print len(data),'records'
 
@@ -89,3 +93,4 @@ print len(recursives),'profiles with recursion errors'
 
 print len(missing_profiles),'missing profiles',missing_profiles[:10],'...' 
 print len(candidate_lines), 'candidate lines'
+print len(extra_tabs),'profiles with extra tabs',extra_tabs[:10],'...'
