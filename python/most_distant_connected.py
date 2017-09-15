@@ -59,7 +59,7 @@ for line in open(sys.argv[1], 'r'):
       p = Profile(row)
       data[p.uid] = p
       lcount += 1
-      if lcount > 4000000:
+      if lcount > 40000000:
         break
     except (ValueError,ProfileException,IndexError):
       c = min(len(header),len(row))
