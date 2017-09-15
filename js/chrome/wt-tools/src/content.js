@@ -66,7 +66,11 @@ scan = function(){
   var $person = $("html[itemscope][itemtype='http://schema.org/Person']");
   if($person.length){
     var data = parseItem($person);
-    data.id = urlToId(data.url[0]);
+    if(data.url == undefined){
+    	data.id = urlToId(document.baseURI);
+    } else {
+        data.id = urlToId(data.url[0]);
+    }
     return {person:data};
   }
 };
@@ -179,7 +183,13 @@ lint = function(data){
   return {ok:ok, span:ret};
 };
 
+upgradePopups = function(){
+	console.log($('a[href][title]'));
+};
+
 main = function(){
+	upgradePopups();
+	
   var data = scan();
   if(data !== undefined){
     chrome.runtime.sendMessage({command:'add', person:data.person}, function(response) {});
@@ -193,7 +203,7 @@ main = function(){
     var dataDiv = $('<div style="display: none">');
     dataDiv.append(tablify(data.person));
 
-    var $button = $('<button type="button" style="float: right;">Hide</button>');
+    var $button = $('<button type="button" style="float: right; font-size: .85em; padding: 2px 6px;">Hide</button>');
     $button.click(function(){
       $status.hide(500);
       chrome.runtime.sendMessage({command:"showPopup"}, function(response) {});
@@ -201,14 +211,14 @@ main = function(){
 
     $status.append($button);
 
-    var $optionsButton = $('<button type="button" style="float: right;">Options</button>');
+    var $optionsButton = $('<button type="button" style="float: right; font-size: .85em; padding: 2px 6px;">Options</button>');
     $optionsButton.click(function(){
       chrome.runtime.sendMessage({command:"showOptions"}, function(response) {});
     });
 
     $status.append($optionsButton);
 
-    var $showDataButton = $('<button type="button" style="float: right;">Show Data</button>');
+    var $showDataButton = $('<button type="button" style="float: right; font-size: .85em; padding: 2px 6px;">Show Data</button>');
     $showDataButton.click(function(){
       if($showDataButton.html() == 'Show Data'){
         dataDiv.show(500);

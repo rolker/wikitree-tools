@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "WikiTree Tools",
   "description": "This extension add useful tools while working on WikiTree.",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Roland Arsenault",
   "icons": { "16": "icon16.png",
     "48": "icon48.png",
