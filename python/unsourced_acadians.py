@@ -4,7 +4,7 @@ import sys
 import csv
 import gzip
 
-csv.field_size_limit(sys.maxsize)
+csv.field_size_limit(2000000)
 
 acadians = []
 unsourced = []
@@ -17,11 +17,13 @@ cat_file = gzip.open(cat_fname,'r')
 
 reader = csv.reader(cat_file,delimiter='\t')
 for row in reader:
-    print row
+    #print row
     if row[1] == 'Acadians':
         acadians.append(row[0])
+        print row
     if row[1] == 'Unsourced_Profiles':
         unsourced.append(row[0])
+        print row
 
 print 'finding acadians that are unsourced...'
 for a in acadians:
