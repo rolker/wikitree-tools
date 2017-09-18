@@ -29,6 +29,20 @@ class ProfileException(BaseException):
   def __init__(self):
     BaseException.__init__(self)
 
+def Profile2Tuple(row):
+    uid = int(row[0])
+    wtid = row[1]
+    if row[-3] in ('','0'):
+      father = None
+    else:
+      father = int(row[-3])
+    if row[-2] in ('','0'):
+      mother = None
+    else:
+      mother = int(row[-2])
+    return (uid,wtid,father,mother)
+
+
 class Profile:
   def __init__(self,row):
     self.uid = int(row[0])
@@ -46,22 +60,6 @@ class Profile:
       
   def __repr__(self):
     return str(self.__dict__)
-
-def getLine(profile,line='paternal'):
-  if line=='paternal':
-    ancestor = profile.father
-  else:
-    ancestor = profile.mother
-  if ancestor is None:
-    return [profile,]
-  else:
-    try:
-      ap = data[ancestor]
-    except KeyError:
-      if not ancestor in missing_profiles:
-        missing_profiles.append(ancestor)
-      return [profile,]
-    return [profile,] + getLine(data[ancestor],line)
   
 header = None
 
@@ -76,8 +74,9 @@ for row in reader:
     if len(row) > 16:
       extra_tabs.append(row[0])
     try:
-      p = Profile(row)
-      data[p.uid] = p
+      #p = Profile(row)
+      p = Profile2Tuple(row)
+      data[p[0]] = p
       lcount += 1
       if lcount%1000 == 0:
         print lcount
