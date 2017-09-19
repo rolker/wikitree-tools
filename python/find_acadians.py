@@ -11,6 +11,10 @@ acadians = []
 root_profile = 'Arsenault-64'
 rootid = None
 
+if len(sys.argv) > 1:
+    root_profile = sys.argv[1]
+    
+out_fname = root_profile+'-out.html'
 
 cat_fname = 'data/dump_categories.csv.gz'
 #users_fname = 'data/dump_people_user.csv.gz'
@@ -75,17 +79,17 @@ print root_profile,rootid, rootid in acadians
 seen_profiles = []
 unseen_profiles = [rootid,]
 
-out = open('out.html','w')
+out = open(out_fname,'w')
 out.write('<html><body>\n')
 
 while len(unseen_profiles):
     try:
         p = data[unseen_profiles[0]]
         if p[2] is not None:
-            if not p[2] in seen_profiles:
+            if not p[2] in seen_profiles and not p[2] in unseen_profiles:
                 unseen_profiles.append(p[2])
         if p[3] is not None:
-            if not p[3] in seen_profiles:
+            if not p[3] in seen_profiles and not p[3] in unseen_profiles:
                 unseen_profiles.append(p[3])
         seen_profiles.append(p[0])
         print p,p[0] in acadians
