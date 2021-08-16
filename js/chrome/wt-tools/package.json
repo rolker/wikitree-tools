@@ -2,7 +2,7 @@
   "name": "wikitree-tools",
   "version": "0.0.5",
   "devDependencies": {
-    "grunt": "~0.4.2",
+    "grunt": ">=1.3.0",
     "grunt-contrib-jshint": "~0.7.2"
   }
 }
